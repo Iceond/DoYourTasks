@@ -30,8 +30,11 @@ class Priority(Base):
 def Create_Task(name,description,category,priority,due_date):
     try:
         new_task = Tasks(taskname=name,description=description,category_id=category ,priority_id=priority,due_date=due_date)
+        session.add(new_task)
+        session.commit()
     except Exception as exc:
         print(f"Error:{exc} has occured")
+        session.rollback()
 def Drop_Task(id:int):
     try:
         session.query(Tasks).get(int(id))
@@ -40,12 +43,16 @@ def Drop_Task(id:int):
     except Exception as exc:
         print(f"Error:{exc} has occured")
 
-def Get_Category(id:int):
+def Get_Category():
     try:
-        session.query(Category).get(int(id))
-        return session.query(Category).get(int(id))
+        categ =  session.query(Category).all()
+        categories = []
+        for e in categ:
+            categories.append(e.Category)
+        return categories
     except Exception as exc:
         print(f"Error:{exc} has occured")
+        return ["Unavailable"]
 
 def get_Priority():
     try:
@@ -57,3 +64,4 @@ def get_Priority():
         return priorities
     except Exception as exc:
         print(exc)
+        return ["Unavailable"]

@@ -32,7 +32,28 @@ def Create_Task(name,description,category,priority,due_date):
         new_task = Tasks(taskname=name,description=description,category_id=category ,priority_id=priority,due_date=due_date)
     except Exception as exc:
         print(f"Error:{exc} has occured")
-def Drop_Task(id):
-    Tasks.query.filter_by(id).delete()
-    session.commit()
+def Drop_Task(id:int):
+    try:
+        session.query(Tasks).get(int(id))
+        session.query(Tasks).delete(synchronize_session=False)
+        session.commit()
+    except Exception as exc:
+        print(f"Error:{exc} has occured")
 
+def Get_Category(id:int):
+    try:
+        session.query(Category).get(int(id))
+        return session.query(Category).get(int(id))
+    except Exception as exc:
+        print(f"Error:{exc} has occured")
+
+def get_Priority():
+    try:
+
+        val = session.query(Priority).all()
+        priorities = []
+        for i in val:
+            priorities.append(i.Priority)
+        return priorities
+    except Exception as exc:
+        print(exc)

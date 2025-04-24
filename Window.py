@@ -1,8 +1,8 @@
-from PySide6.QtWidgets import QWidget,QApplication,QMainWindow, QTableWidget,QTabWidget,QLabel,QPushButton,QLineEdit,QListWidget,QComboBox,QHBoxLayout,QCalendarWidget
+from PySide6.QtWidgets import QWidget,QApplication,QMainWindow, QTableWidget,QTabWidget,QLabel,QPushButton,QLineEdit,QListWidget,QComboBox,QGridLayout,QCalendarWidget
 from PySide6.QtGui import QColor,QPalette
 import sys
 from PySide6.QtCore import Signal
-from tables import Create_Task,Drop_Task,Tasks
+from tables import Create_Task,Drop_Task,Tasks,Get_Category,get_Priority
 
 
 def droptaskbyid(value):
@@ -22,12 +22,30 @@ class View_Tasks(QWidget):
         button = QPushButton("Complete Task")
         labelid = QLabel("enter ID:")
         self.id = QLineEdit()
+        self.newtask = QPushButton("Create Task")
+        self.taskname = QLineEdit()
+        self.taskcategory = QComboBox()
+        self.taskdifficulty = QComboBox()
+        enter_name = QLabel("Enter Name:")
+        item = get_Priority()
+        enter_category = QLabel("Enter Category:")
+        enter_priority = QLabel("Enter Priority:")
+        self.taskdifficulty.addItems(item)
 
         button.clicked.connect(droptaskbyid)
-        layout = QHBoxLayout()
+        layout = QGridLayout()
         layout.addWidget(label)
         layout.addWidget(self.table)
+        layout.addWidget(labelid)
+        layout.addWidget(self.id)
         layout.addWidget(button)
+        layout.addWidget(enter_name)
+        layout.addWidget(self.taskname)
+        layout.addWidget(enter_category)
+        layout.addWidget(self.taskcategory)
+        layout.addWidget(enter_priority)
+        layout.addWidget(self.taskdifficulty)
+        layout.addWidget(self.newtask)
         self.setLayout(layout)
         #self.id.textChanged.connect(self.pressed())
     def pressed(self):

@@ -1,0 +1,38 @@
+from sqlalchemy import create_engine,INTEGER,VARCHAR, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, declarative_base, sessionmaker
+import datetime
+Base = declarative_base()
+DATABASE_URL = "sqlite:///identifier.sqlite"
+engine = create_engine(DATABASE_URL, echo=True)
+Session = sessionmaker(bind=engine)
+session = Session()
+
+
+class Tasks(Base):
+    __tablename__ = 'tasks'
+    id: Mapped[int] = mapped_column(INTEGER, primary_key=True)
+    taskname: Mapped[str] = mapped_column(VARCHAR(50), nullable=False)
+    description: Mapped[str] = mapped_column(VARCHAR(200))
+    category_id: Mapped[int] = mapped_column(INTEGER, ForeignKey('categories.id'))
+    priority_id: Mapped[int] = mapped_column(INTEGER,ForeignKey("priorities.id"))
+    due_date: Mapped[datetime.datetime] = mapped_column(VARCHAR(50), nullable=False)
+
+class Category(Base):
+    __tablename__ = 'categories'
+    id: Mapped[int] = mapped_column(INTEGER, primary_key=True)
+    Category: Mapped[str] = mapped_column(VARCHAR(50), nullable=False)
+
+class Priority(Base):
+    __tablename__ = 'priorities'
+    id : Mapped[int] = mapped_column(INTEGER, primary_key=True)
+    Priority: Mapped[str] = mapped_column(VARCHAR(50), nullable=False)
+
+def Create_Task(name,description,category,priority,due_date):
+    try:
+        new_task = Tasks(taskname=name,description=description,category_id=category ,priority_id=priority,due_date=due_date)
+    except Exception as exc:
+        print(f"Error:{exc} has occured")
+def Drop_Task(id):
+    Tasks.query.filter_by(id).delete()
+    session.commit()
+

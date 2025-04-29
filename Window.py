@@ -2,13 +2,23 @@ from PySide6.QtWidgets import QWidget, QApplication, QMainWindow, QTableWidget, 
     QLineEdit, QListWidget, QComboBox, QGridLayout, QCalendarWidget, QTableWidgetItem
 from PySide6.QtGui import QColor,QPalette
 import sys
+import random
 from PySide6.QtCore import Signal
-from tables import Create_Task,Drop_Task,Tasks,Get_Category,get_Priority,session
+from tables import Create_Task, Drop_Task, Tasks, Get_Category, get_Priority, session, getcategorybyid
 
 
 def droptaskbyid(value):
     Drop_Task(value)
-
+def updateTasks():
+    tasks = session.query(Tasks).all()
+    print(tasks)
+    for task in tasks:
+        rowstest.append(task.taskname)
+        rowstest.append(task.description)
+        rowstest.append(getcategorybyid(task.category_id))
+        rowstest.append(task.priority_id)
+        rowstest.append(task.due_date)
+        print(rowstest)
 
 
 class View_Tasks(QWidget):
@@ -23,12 +33,12 @@ class View_Tasks(QWidget):
         self.table.setHorizontalHeaderLabels(["","Задание", "Описание", "Категория","Приоритет","Дата окончания"])
         self.table.setVerticalHeaderLabels(["1", "2", "3"])
         self.table.resizeColumnsToContents()
-        self.table.setRowCount(len(rows))
+        self.table.setRowCount(len(rowstest))
+        #for col in range(1,6):
+        #    for row in range(0,len(rowstest)):
+        #        self.table.setItem(row,col,QTableWidgetItem(str(rowstest[0])))
+        # FIX!!!!!!!!!!!!!!!!
 
-        for row, cols in enumerate(str(rows)):
-            for col, text in enumerate(cols):
-                print(col)
-                self.table.setItem(row, col, QTableWidgetItem(text))
         button = QPushButton("Complete Task")
         labelid = QLabel("enter ID:")
         self.id = QLineEdit()
@@ -65,8 +75,8 @@ class View_Tasks(QWidget):
 
     def createTask(self):
         name = str(self.taskname.text())
-        task = self.taskcategory.currentIndex()
-        priority = self.taskdifficulty.currentIndex()
+        task = self.taskcategory.currentIndex() + 1
+        priority = self.taskdifficulty.currentIndex() + 1
         Create_Task(name=name,description="",category=task,priority=priority,due_date="-")
         updateTasks()
     def pressed(self):
@@ -74,23 +84,14 @@ class View_Tasks(QWidget):
              value = int(self.id.text())
          except Exception as e:
              print(e)
-rows = []
-def updateTasks():
-    tasks = session.query(Tasks).all()
-    print(tasks)
-    for task in tasks:
-        rows.append(task.taskname)
-        rows.append(task.description)
-        rows.append(task.category_id)
-        rows.append(task.priority_id)
-        rows.append(task.due_date)
-        print(rows)
+rowstest = []
+
 updateTasks()
 
 app = QApplication.instance()
 if app is None:
     app = QApplication(sys.argv)
 
-main = View_Tasks(rows)
+main = View_Tasks(rowstest)
 main.show()
 app.exec()

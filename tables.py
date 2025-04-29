@@ -54,7 +54,6 @@ def Drop_Task(id:int):
     except Exception as exc:
         print(f"Error:{exc} has occured")
 
-Base.metadata.create_all(bind=engine)
 
 def Get_Category():
     try:
@@ -66,7 +65,12 @@ def Get_Category():
     except Exception as exc:
         print(f"Error:{exc} has occured")
         return ["Unavailable"]
-
+def getcategorybyid(id):
+    try:
+        categ = session.query(Category).get(id)
+        return categ
+    except Exception as exc:
+        print(exc)
 def get_Priority():
     try:
 

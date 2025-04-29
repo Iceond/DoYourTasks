@@ -13,6 +13,7 @@ class Tasks(Base):
     Id: Mapped[int] = mapped_column(INTEGER, primary_key=True)
     taskname: Mapped[str] = mapped_column(VARCHAR(50), nullable=False)
     description: Mapped[str] = mapped_column(VARCHAR(200))
+    user_id: Mapped[int] = mapped_column(INTEGER,ForeignKey('users.ID'))
     category_id: Mapped[int] = mapped_column(INTEGER, ForeignKey('categories.id'))
     priority_id: Mapped[int] = mapped_column(INTEGER,ForeignKey("priorities.id"))
     due_date: Mapped[datetime.datetime] = mapped_column(VARCHAR(50), nullable=False)
@@ -32,20 +33,28 @@ class Priority(Base):
 
 def Create_Task(name,description,category,priority,due_date):
     try:
-        order =  1 if len(session.query(Tasks).all()) else len(session.query(Tasks).all())
-        new_task = Tasks(Id=order,taskname=name,description=description,category_id=category ,priority_id=priority,due_date=due_date)
+        order =  1 if len(session.query(Tasks).all()) +1 < 2 else len(session.query(Tasks).all()) + 1
+        new_task = Tasks(Id=order,taskname=name,description=description,category_id=category ,priority_id=priority,due_date=due_date,user_id=1)
         session.add(new_task)
         session.commit()
     except Exception as exc:
         print(f"Error:{exc} has occured")
         session.rollback()
+
+class User(Base):
+    __tablename__ = 'users'
+    ID: Mapped[int] = mapped_column(INTEGER, primary_key=True)
+    Username: Mapped[str] = mapped_column(VARCHAR(50), nullable=False)
+
 def Drop_Task(id:int):
     try:
-        session.query(Tasks).get(int(Id))
+        session.query(Tasks).get(int(id))
         session.query(Tasks).delete(synchronize_session=False)
         session.commit()
     except Exception as exc:
         print(f"Error:{exc} has occured")
+
+Base.metadata.create_all(bind=engine)
 
 def Get_Category():
     try:

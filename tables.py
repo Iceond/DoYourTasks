@@ -10,12 +10,15 @@ session = Session()
 
 class Tasks(Base):
     __tablename__ = 'tasks'
-    id: Mapped[int] = mapped_column(INTEGER, primary_key=True)
+    Id: Mapped[int] = mapped_column(INTEGER, primary_key=True)
     taskname: Mapped[str] = mapped_column(VARCHAR(50), nullable=False)
     description: Mapped[str] = mapped_column(VARCHAR(200))
     category_id: Mapped[int] = mapped_column(INTEGER, ForeignKey('categories.id'))
     priority_id: Mapped[int] = mapped_column(INTEGER,ForeignKey("priorities.id"))
     due_date: Mapped[datetime.datetime] = mapped_column(VARCHAR(50), nullable=False)
+
+    def __repr__(self):
+        return f"{self.taskname} | {self.description} | {self.category_id} | {self.priority_id} | {self.due_date}"
 
 class Category(Base):
     __tablename__ = 'categories'
@@ -29,7 +32,8 @@ class Priority(Base):
 
 def Create_Task(name,description,category,priority,due_date):
     try:
-        new_task = Tasks(taskname=name,description=description,category_id=category ,priority_id=priority,due_date=due_date)
+        order =  1 if len(session.query(Tasks).all()) else len(session.query(Tasks).all())
+        new_task = Tasks(Id=order,taskname=name,description=description,category_id=category ,priority_id=priority,due_date=due_date)
         session.add(new_task)
         session.commit()
     except Exception as exc:
@@ -37,7 +41,7 @@ def Create_Task(name,description,category,priority,due_date):
         session.rollback()
 def Drop_Task(id:int):
     try:
-        session.query(Tasks).get(int(id))
+        session.query(Tasks).get(int(Id))
         session.query(Tasks).delete(synchronize_session=False)
         session.commit()
     except Exception as exc:

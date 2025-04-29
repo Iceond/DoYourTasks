@@ -1,4 +1,5 @@
-from PySide6.QtWidgets import QWidget,QApplication,QMainWindow, QTableWidget,QTabWidget,QLabel,QPushButton,QLineEdit,QListWidget,QComboBox,QGridLayout,QCalendarWidget
+from PySide6.QtWidgets import QWidget, QApplication, QMainWindow, QTableWidget, QTabWidget, QLabel, QPushButton, \
+    QLineEdit, QListWidget, QComboBox, QGridLayout, QCalendarWidget, QTableWidgetItem
 from PySide6.QtGui import QColor,QPalette
 import sys
 from PySide6.QtCore import Signal
@@ -18,15 +19,16 @@ class View_Tasks(QWidget):
         self.resize(600,800)
         label = QLabel("Your Tasks")
         self.table = QTableWidget()  # 3 строк, 3 столбца
-        self.table.setColumnCount(5)
+        self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels(["","Задание", "Описание", "Категория","Приоритет","Дата окончания"])
         self.table.setVerticalHeaderLabels(["1", "2", "3"])
         self.table.resizeColumnsToContents()
         self.table.setRowCount(len(rows))
-        for row, cols in enumerate(rows):
+
+        for row, cols in enumerate(str(rows)):
             for col, text in enumerate(cols):
-                table_item = text
-                self.table.setItem(row, col, table_item)
+                print(col)
+                self.table.setItem(row, col, QTableWidgetItem(text))
         button = QPushButton("Complete Task")
         labelid = QLabel("enter ID:")
         self.id = QLineEdit()
@@ -62,7 +64,10 @@ class View_Tasks(QWidget):
 
 
     def createTask(self):
-        Create_Task(self.taskname.text,"",self.taskcategory.currentIndex(),self.taskdifficulty.currentIndex(),"-")
+        name = str(self.taskname.text())
+        task = self.taskcategory.currentIndex()
+        priority = self.taskdifficulty.currentIndex()
+        Create_Task(name=name,description="",category=task,priority=priority,due_date="-")
         updateTasks()
     def pressed(self):
          try:
@@ -71,14 +76,15 @@ class View_Tasks(QWidget):
              print(e)
 rows = []
 def updateTasks():
-
-    for task in session.query(Tasks).all():
-        rows.append(task.id)
+    tasks = session.query(Tasks).all()
+    print(tasks)
+    for task in tasks:
         rows.append(task.taskname)
         rows.append(task.description)
         rows.append(task.category_id)
         rows.append(task.priority_id)
         rows.append(task.due_date)
+        print(rows)
 updateTasks()
 
 app = QApplication.instance()

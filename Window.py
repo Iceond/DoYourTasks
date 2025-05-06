@@ -92,7 +92,7 @@ updateTasks()
 
 app = QApplication.instance()
 if app is None:
-    app = QApplication(sys.argv)\
+    app = QApplication(sys.argv)
 
 main = View_Tasks(rowstest)
 main.show()

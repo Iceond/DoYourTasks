@@ -82,4 +82,3 @@ def get_Priority():
     except Exception as exc:
         print(exc)
         return ["Unavailable"]
-

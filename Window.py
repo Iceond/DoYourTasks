@@ -96,4 +96,5 @@ if app is None:
 
 main = View_Tasks(rowstest)
 main.show()
+
 app.exec()

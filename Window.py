@@ -1,16 +1,16 @@
 from PySide6.QtWidgets import QWidget, QApplication, QMainWindow, QTableWidget, QTabWidget, QLabel, QPushButton, \
     QLineEdit, QListWidget, QComboBox, QGridLayout, QCalendarWidget, QTableWidgetItem
-from PySide6.QtGui import QColor,QPalette
+from PySide6.QtGui import QColor, QPalette
 import sys
 import random
 from PySide6.QtCore import Signal
-from tables import Create_Task, Drop_Task, Tasks, Get_Category, get_Priority, session, getcategorybyid,get_priority_by_id
-
+from tables import Create_Task, Drop_Task, Tasks, Get_Category, get_Priority, session, getcategorybyid, get_priority_by_id
 
 
 def updateTasks():
     tasks = session.query(Tasks).all()
     print(tasks)
+    rowstest.clear()
     for task in tasks:
         rowstest2 = []
         rowstest2.append(task.taskname)
@@ -24,42 +24,37 @@ def updateTasks():
 
 
 class View_Tasks(QWidget):
-    def __init__(self,rows):
+    def __init__(self, rows):
         super().__init__()
-        value = ""
-
-        self.resize(600,800)
+        self.resize(600, 800)
         label = QLabel("Your Tasks")
-        self.table = QTableWidget()  # 3 строк, 3 столбца
+        self.table = QTableWidget()
         self.table.setColumnCount(7)
-        self.table.setHorizontalHeaderLabels(["","Задание", "Описание", "Категория","Приоритет","Дата окончания","ID"])
+        self.table.setHorizontalHeaderLabels(["", "Задание", "Описание", "Категория", "Приоритет", "Дата окончания", "ID"])
         self.table.setVerticalHeaderLabels(["1", "2", "3"])
         self.table.resizeColumnsToContents()
         self.table.setRowCount(len(rowstest))
-        for col in range(1,7):
-            for row in range(0,len(rowstest)):
-                self.table.setItem(row,col,QTableWidgetItem(str(rowstest[row][col-1])))
-
+        for col in range(1, 7):
+            for row in range(0, len(rowstest)):
+                self.table.setItem(row, col, QTableWidgetItem(str(rowstest[row][col - 1])))
 
         button = QPushButton("Complete Task")
         labelid = QLabel("enter ID:")
         self.id = QLineEdit()
         self.newtask = QPushButton("Create Task")
         self.taskname = QLineEdit()
+        self.taskdescription = QLineEdit()
         self.taskcategory = QComboBox()
         self.taskdifficulty = QComboBox()
         enter_name = QLabel("Enter Name:")
+        enter_description = QLabel("Enter Description:")
         item = get_Priority()
         item2 = Get_Category()
         enter_category = QLabel("Enter Category:")
         enter_priority = QLabel("Enter Priority:")
         self.taskcategory.addItems(item2)
         self.taskdifficulty.addItems(item)
-        val = self.id.text()
-        try:
-            val = int(self.id.text())
-        except ValueError:
-            print("Invalid ID")
+
         button.clicked.connect(self.droptaskbyid)
         layout = QGridLayout()
         layout.addWidget(label)
@@ -69,6 +64,8 @@ class View_Tasks(QWidget):
         layout.addWidget(button)
         layout.addWidget(enter_name)
         layout.addWidget(self.taskname)
+        layout.addWidget(enter_description)
+        layout.addWidget(self.taskdescription)
         layout.addWidget(enter_category)
         layout.addWidget(self.taskcategory)
         layout.addWidget(enter_priority)
@@ -76,7 +73,6 @@ class View_Tasks(QWidget):
         layout.addWidget(self.newtask)
         self.newtask.clicked.connect(self.createTask)
         self.setLayout(layout)
-        #self.id.textChanged.connect(self.pressed())
 
     def droptaskbyid(self):
         value = 0
@@ -89,15 +85,13 @@ class View_Tasks(QWidget):
 
     def createTask(self):
         name = str(self.taskname.text())
+        description = str(self.taskdescription.text())
         task = self.taskcategory.currentIndex() + 1
         priority = self.taskdifficulty.currentIndex() + 1
-        Create_Task(name=name,description="",category=task,priority=priority,due_date="-")
+        Create_Task(name=name, description=description, category=task, priority=priority, due_date="-")
         updateTasks()
-    def pressed(self):
-         try:
-             value = int(self.id.text())
-         except Exception as e:
-             print(e)
+
+
 rowstest = []
 
 updateTasks()

@@ -68,7 +68,7 @@ def Get_Category():
 def getcategorybyid(id):
     try:
         categ = session.query(Category).get(id)
-        return categ
+        return categ.Category
     except Exception as exc:
         print(exc)
 def get_Priority():
@@ -82,3 +82,4 @@ def get_Priority():
     except Exception as exc:
         print(exc)
         return ["Unavailable"]
+

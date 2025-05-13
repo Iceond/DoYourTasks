@@ -13,11 +13,13 @@ def updateTasks():
     tasks = session.query(Tasks).all()
     print(tasks)
     for task in tasks:
-        rowstest.append(task.taskname)
-        rowstest.append(task.description)
-        rowstest.append(getcategorybyid(task.category_id))
-        rowstest.append(task.priority_id)
-        rowstest.append(task.due_date)
+        rowstest2 = []
+        rowstest2.append(task.taskname)
+        rowstest2.append(task.description)
+        rowstest2.append(getcategorybyid(task.category_id))
+        rowstest2.append(task.priority_id)
+        rowstest2.append(task.due_date)
+        rowstest.append(rowstest2)
         print(rowstest)
 
 
@@ -34,10 +36,10 @@ class View_Tasks(QWidget):
         self.table.setVerticalHeaderLabels(["1", "2", "3"])
         self.table.resizeColumnsToContents()
         self.table.setRowCount(len(rowstest))
-        #for col in range(1,6):
-        #    for row in range(0,len(rowstest)):
-        #        self.table.setItem(row,col,QTableWidgetItem(str(rowstest[0])))
-        # FIX!!!!!!!!!!!!!!!!
+        for col in range(1,6):
+            for row in range(0,len(rowstest)):
+                self.table.setItem(row,col,QTableWidgetItem(str(rowstest[row][col-1])))
+
 
         button = QPushButton("Complete Task")
         labelid = QLabel("enter ID:")

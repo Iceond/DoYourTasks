@@ -44,6 +44,36 @@ class View_Tasks(QWidget):
         self.taskdescription = QLineEdit()
         self.taskcategory = QComboBox()
         self.taskdifficulty = QComboBox()
+        self.setStyleSheet("""
+            View_Tasks {
+                background: qlineargradient(
+                    spread:pad, x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgba(150, 150, 255, 255),
+                    stop:1 rgba(135, 0, 120, 255));
+            }
+
+            QTableWidget, QLineEdit, QComboBox, QCalendarWidget, QPushButton {
+                background-color: rgba(255, 255, 255, 200);
+                border: 1px solid rgba(0, 0, 0, 100);
+                border-radius: 4px;
+                padding: 3px;
+            }
+
+            QLabel {
+                color: white;
+                font-weight: bold;
+                font-size: 12pt;
+            }
+
+            QHeaderView::section {
+                background-color: rgba(200, 200, 255, 150);
+                padding: 5px;
+            }
+
+            QCalendarWidget QWidget { 
+                alternate-background-color: rgba(255, 255, 255, 150); 
+            }
+        """)
 
         enter_name = QLabel("Enter Name:")
         enter_description = QLabel("Enter Description:")

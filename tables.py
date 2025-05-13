@@ -46,10 +46,10 @@ class User(Base):
     ID: Mapped[int] = mapped_column(INTEGER, primary_key=True)
     Username: Mapped[str] = mapped_column(VARCHAR(50), nullable=False)
 
-def Drop_Task(id:int):
+def Drop_Task(id):
     try:
         session.query(Tasks).get(int(id))
-        session.query(Tasks).delete(synchronize_session=False)
+        session.query(Tasks).filter(Tasks.Id==id).delete()
         session.commit()
     except Exception as exc:
         print(f"Error:{exc} has occured")

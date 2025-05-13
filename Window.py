@@ -7,8 +7,7 @@ from PySide6.QtCore import Signal
 from tables import Create_Task, Drop_Task, Tasks, Get_Category, get_Priority, session, getcategorybyid,get_priority_by_id
 
 
-def droptaskbyid(value):
-    Drop_Task(value)
+
 def updateTasks():
     tasks = session.query(Tasks).all()
     print(tasks)
@@ -19,6 +18,7 @@ def updateTasks():
         rowstest2.append(getcategorybyid(task.category_id))
         rowstest2.append(get_priority_by_id(task.priority_id))
         rowstest2.append(task.due_date)
+        rowstest2.append(task.Id)
         rowstest.append(rowstest2)
         print(rowstest)
 
@@ -31,12 +31,12 @@ class View_Tasks(QWidget):
         self.resize(600,800)
         label = QLabel("Your Tasks")
         self.table = QTableWidget()  # 3 строк, 3 столбца
-        self.table.setColumnCount(6)
-        self.table.setHorizontalHeaderLabels(["","Задание", "Описание", "Категория","Приоритет","Дата окончания"])
+        self.table.setColumnCount(7)
+        self.table.setHorizontalHeaderLabels(["","Задание", "Описание", "Категория","Приоритет","Дата окончания","ID"])
         self.table.setVerticalHeaderLabels(["1", "2", "3"])
         self.table.resizeColumnsToContents()
         self.table.setRowCount(len(rowstest))
-        for col in range(1,6):
+        for col in range(1,7):
             for row in range(0,len(rowstest)):
                 self.table.setItem(row,col,QTableWidgetItem(str(rowstest[row][col-1])))
 
@@ -55,8 +55,12 @@ class View_Tasks(QWidget):
         enter_priority = QLabel("Enter Priority:")
         self.taskcategory.addItems(item2)
         self.taskdifficulty.addItems(item)
-
-        button.clicked.connect(droptaskbyid)
+        val = self.id.text()
+        try:
+            val = int(self.id.text())
+        except ValueError:
+            print("Invalid ID")
+        button.clicked.connect(self.droptaskbyid)
         layout = QGridLayout()
         layout.addWidget(label)
         layout.addWidget(self.table)
@@ -74,6 +78,14 @@ class View_Tasks(QWidget):
         self.setLayout(layout)
         #self.id.textChanged.connect(self.pressed())
 
+    def droptaskbyid(self):
+        value = 0
+        try:
+            value = self.id.text()
+            value = int(value)
+            Drop_Task(value)
+        except ValueError:
+            print("eroor")
 
     def createTask(self):
         name = str(self.taskname.text())

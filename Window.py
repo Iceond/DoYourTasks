@@ -4,7 +4,7 @@ from PySide6.QtGui import QColor,QPalette
 import sys
 import random
 from PySide6.QtCore import Signal
-from tables import Create_Task, Drop_Task, Tasks, Get_Category, get_Priority, session, getcategorybyid
+from tables import Create_Task, Drop_Task, Tasks, Get_Category, get_Priority, session, getcategorybyid,get_priority_by_id
 
 
 def droptaskbyid(value):
@@ -17,7 +17,7 @@ def updateTasks():
         rowstest2.append(task.taskname)
         rowstest2.append(task.description)
         rowstest2.append(getcategorybyid(task.category_id))
-        rowstest2.append(task.priority_id)
+        rowstest2.append(get_priority_by_id(task.priority_id))
         rowstest2.append(task.due_date)
         rowstest.append(rowstest2)
         print(rowstest)

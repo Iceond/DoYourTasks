@@ -83,3 +83,9 @@ def get_Priority():
         print(exc)
         return ["Unavailable"]
 
+def get_priority_by_id(id):
+    try:
+        pri = session.query(Priority).get(id)
+        return pri.Priority
+    except Exception as exc:
+        print(exc)

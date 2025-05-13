@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget, QApplication, QMainWindow, QTableWidget, 
 from PySide6.QtGui import QColor, QPalette
 import sys
 import random
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal,QDate
 from tables import Create_Task, Drop_Task, Tasks, Get_Category, get_Priority, session, getcategorybyid, \
     get_priority_by_id
 
@@ -33,6 +33,9 @@ class View_Tasks(QWidget):
         self.table.setHorizontalHeaderLabels(["Задание", "Описание", "Категория", "Приоритет", "Дата окончания", "ID"])
         self.table.resizeColumnsToContents()
 
+        self.calendar = QCalendarWidget()
+        self.calendar.setGridVisible(True)
+        self.calendar.setSelectedDate(QDate.currentDate())
         button = QPushButton("Complete Task")
         labelid = QLabel("Enter ID:")
         self.id = QLineEdit()
@@ -46,6 +49,7 @@ class View_Tasks(QWidget):
         enter_description = QLabel("Enter Description:")
         enter_category = QLabel("Enter Category:")
         enter_priority = QLabel("Enter Priority:")
+        enter_due_date = QLabel("Select Due Date:")
 
         self.taskcategory.addItems(Get_Category())
         self.taskdifficulty.addItems(get_Priority())
@@ -65,7 +69,9 @@ class View_Tasks(QWidget):
         layout.addWidget(self.taskcategory, 6, 1)
         layout.addWidget(enter_priority, 7, 0)
         layout.addWidget(self.taskdifficulty, 7, 1)
-        layout.addWidget(self.newtask, 8, 0, 1, 2)
+        layout.addWidget(enter_due_date, 8, 0)
+        layout.addWidget(self.calendar, 8, 1)
+        layout.addWidget(self.newtask, 9, 0, 1, 2)
 
         self.newtask.clicked.connect(self.createTask)
         self.setLayout(layout)
@@ -90,11 +96,14 @@ class View_Tasks(QWidget):
 
     def createTask(self):
         name = self.taskname.text()
+        selected_date = self.calendar.selectedDate()
+        due_date = selected_date.toString("yyyy-MM-dd")
         description = self.taskdescription.text()
         category = self.taskcategory.currentIndex() + 1
         priority = self.taskdifficulty.currentIndex() + 1
-        Create_Task(name=name, description=description, category=category, priority=priority, due_date="-")
+        Create_Task(name=name, description=description, category=category, priority=priority, due_date=due_date)
         self.taskname.clear()
+        self.calendar.setSelectedDate(QDate.currentDate())
         self.taskdescription.clear()
         updateTasks()
         self.refreshTable()

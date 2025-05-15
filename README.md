@@ -1,7 +1,1 @@
-How is this even working?????
-
-
-
-
---No it doesn't
-Are you sure?
+A simple and customizable python task manager.

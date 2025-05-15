@@ -1,9 +1,9 @@
 from PySide6.QtWidgets import QWidget, QApplication, QMainWindow, QTableWidget, QTabWidget, QLabel, QPushButton, \
-    QLineEdit, QListWidget, QComboBox, QGridLayout, QCalendarWidget, QTableWidgetItem
+    QLineEdit, QListWidget, QComboBox, QGridLayout, QCalendarWidget, QTableWidgetItem, QColorDialog
 from PySide6.QtGui import QColor, QPalette
 import sys
 import random
-from PySide6.QtCore import Signal,QDate
+from PySide6.QtCore import Signal,QDate,QSettings
 from tables import Create_Task, Drop_Task, Tasks, Get_Category, get_Priority, session, getcategorybyid, \
     get_priority_by_id
 
@@ -28,16 +28,36 @@ class View_Tasks(QWidget):
         super().__init__()
         self.resize(600, 800)
         label = QLabel("Your Tasks")
+
+        self.top_color = QColor(150, 150, 255)
+        self.bottom_color = QColor(135, 0, 120)
+
         self.table = QTableWidget()
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels(["Задание", "Описание", "Категория", "Приоритет", "Дата окончания", "ID"])
         self.table.resizeColumnsToContents()
-
+        self.top_color_btn = QPushButton()
+        self.bottom_color_btn = QPushButton()
+        self.top_color_btn.clicked.connect(lambda: self.pick_color("top"))
+        self.bottom_color_btn.clicked.connect(lambda: self.pick_color("bottom"))
+        self._update_button_colors()
         self.calendar = QCalendarWidget()
         self.calendar.setGridVisible(True)
         self.calendar.setSelectedDate(QDate.currentDate())
         button = QPushButton("Complete Task")
         labelid = QLabel("Enter ID:")
+        self.settings = QSettings("TaskApp", "ColorPreferences")
+
+        # Load saved colors or defaults
+        self.top_color = QColor(self.settings.value("top_color", "#9696ff"))
+        self.bottom_color = QColor(self.settings.value("bottom_color", "#870078"))
+
+        # Validate colors
+        if not self.top_color.isValid():
+            self.top_color = QColor(150, 150, 255)
+        if not self.bottom_color.isValid():
+            self.bottom_color = QColor(35, 0, 120)
+
         self.id = QLineEdit()
         self.newtask = QPushButton("Create Task")
         self.taskname = QLineEdit()
@@ -102,6 +122,11 @@ class View_Tasks(QWidget):
         layout.addWidget(enter_due_date, 8, 0)
         layout.addWidget(self.calendar, 8, 1)
         layout.addWidget(self.newtask, 9, 0, 1, 2)
+        layout.addWidget(QLabel("Gradient Top:"), 10, 0)
+        layout.addWidget(self.top_color_btn, 10, 1)
+        layout.addWidget(QLabel("Gradient Bottom:"), 11, 0)
+        layout.addWidget(self.bottom_color_btn, 11, 1)
+
 
         self.newtask.clicked.connect(self.createTask)
         self.setLayout(layout)
@@ -124,6 +149,39 @@ class View_Tasks(QWidget):
         except ValueError:
             print("Invalid ID")
 
+    def pick_color(self, position):
+        color = QColorDialog.getColor()
+        if color.isValid():
+            if position == "top":
+                self.top_color = color
+            else:
+                self.bottom_color = color
+            self._update_button_colors()
+            self._apply_styles()
+
+    def _update_button_colors(self):
+        self.top_color_btn.setStyleSheet(f"background-color: {self.top_color.name()};")
+        self.bottom_color_btn.setStyleSheet(f"background-color: {self.bottom_color.name()};")
+
+    def _apply_styles(self):
+        self.setStyleSheet(f"""
+              View_Tasks {{
+                  background: qlineargradient(
+                      spread:pad, x1:0, y1:0, x2:0, y2:1,
+                      stop:0 {self.top_color.name()},
+                      stop:1 {self.bottom_color.name()});
+              }}
+              QTableWidget, QLineEdit, QComboBox, QCalendarWidget, QPushButton {{
+                  background-color: rgba(255, 255, 255, 200);
+                  border: 1px solid rgba(0, 0, 0, 100);
+                  border-radius: 4px;
+                  padding: 3px;
+              }}
+              QLabel {{ color: white; font-weight: bold; font-size: 12pt; }}
+              QHeaderView::section {{ background-color: rgba(200, 200, 255, 150); padding: 5px; }}
+              QCalendarWidget QWidget {{ alternate-background-color: rgba(255, 255, 255, 150); }}
+          """)
+
     def createTask(self):
         name = self.taskname.text()
         selected_date = self.calendar.selectedDate()
@@ -137,6 +195,12 @@ class View_Tasks(QWidget):
         self.taskdescription.clear()
         updateTasks()
         self.refreshTable()
+
+    def closeEvent(self, event):
+        # Save colors when window closes
+        self.settings.setValue("top_color", self.top_color.name())
+        self.settings.setValue("bottom_color", self.bottom_color.name())
+        super().closeEvent(event)
 
 
 rowstest = []

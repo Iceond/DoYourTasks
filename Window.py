@@ -27,14 +27,14 @@ class View_Tasks(QWidget):
     def __init__(self, rows):
         super().__init__()
         self.resize(600, 800)
-        label = QLabel("Your Tasks")
-
+        label = QLabel("Ваши задачи")
+        self.setWindowTitle("Tasks")
         self.top_color = QColor(150, 150, 255)
         self.bottom_color = QColor(135, 0, 120)
 
         self.table = QTableWidget()
         self.table.setColumnCount(6)
-        self.table.setHorizontalHeaderLabels(["Задание", "Описание", "Категория", "Приоритет", "Дата окончания", "ID"])
+        self.table.setHorizontalHeaderLabels(["Задание", "Описание", "Категория", "Приоритет", "Дата окончания", "Номер"])
         self.table.resizeColumnsToContents()
         self.top_color_btn = QPushButton()
         self.bottom_color_btn = QPushButton()
@@ -44,8 +44,8 @@ class View_Tasks(QWidget):
         self.calendar = QCalendarWidget()
         self.calendar.setGridVisible(True)
         self.calendar.setSelectedDate(QDate.currentDate())
-        button = QPushButton("Complete Task")
-        labelid = QLabel("Enter ID:")
+        button = QPushButton("Завершить задачу по номеру")
+        labelid = QLabel("Введите номер задачи:")
         self.settings = QSettings("TaskApp", "ColorPreferences")
 
         # Load saved colors or defaults
@@ -59,7 +59,7 @@ class View_Tasks(QWidget):
             self.bottom_color = QColor(35, 0, 120)
 
         self.id = QLineEdit()
-        self.newtask = QPushButton("Create Task")
+        self.newtask = QPushButton("Создать задачу")
         self.taskname = QLineEdit()
         self.taskdescription = QLineEdit()
         self.taskcategory = QComboBox()
@@ -95,11 +95,11 @@ class View_Tasks(QWidget):
             }
         """)
 
-        enter_name = QLabel("Enter Name:")
-        enter_description = QLabel("Enter Description:")
-        enter_category = QLabel("Enter Category:")
-        enter_priority = QLabel("Enter Priority:")
-        enter_due_date = QLabel("Select Due Date:")
+        enter_name = QLabel("Введите название задачи:")
+        enter_description = QLabel("Описание:")
+        enter_category = QLabel("Выберите категорию:")
+        enter_priority = QLabel("Выберите приоритет:")
+        enter_due_date = QLabel("Выберите дату окончания:")
 
         self.taskcategory.addItems(Get_Category())
         self.taskdifficulty.addItems(get_Priority())
@@ -122,9 +122,9 @@ class View_Tasks(QWidget):
         layout.addWidget(enter_due_date, 8, 0)
         layout.addWidget(self.calendar, 8, 1)
         layout.addWidget(self.newtask, 9, 0, 1, 2)
-        layout.addWidget(QLabel("Gradient Top:"), 10, 0)
+        layout.addWidget(QLabel("Верх градиента:"), 10, 0)
         layout.addWidget(self.top_color_btn, 10, 1)
-        layout.addWidget(QLabel("Gradient Bottom:"), 11, 0)
+        layout.addWidget(QLabel("Низ градиента:"), 11, 0)
         layout.addWidget(self.bottom_color_btn, 11, 1)
 
 
